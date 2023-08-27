@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
 {
 	char *op;
 
+	char line[MAX_LINE_LENGTH];
+
 	if (argc != 2)
 	{
 		fprintf(stderr, "USAGE: monty file\n");
@@ -28,18 +30,18 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	while (getline(&var.buffer, &var.temp, var.myFILE) != -1)
+	while (fgets(line, sizeof(line), var.myFILE) != NULL)
 	{
-		op = strtok(var.buffer, " \r\t\n");
-		if (!op)
-			if (funct_monty(&var, op) == EXIT_FAILURE)
+		op = strtok(var.buffer, DELIMS);
+		if (op && funct_monty(&var, op) == EXIT_FAILURE)
 			{
 				free_all();
+				fclose(var.myFILE);
 				exit(EXIT_FAILURE);
 			}
 		var.line_number++;
 	}
-
+	fclose(var.myFILE);
 	free_all();
 
 	exit(EXIT_SUCCESS);
